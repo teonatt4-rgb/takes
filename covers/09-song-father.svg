@@ -1,0 +1,21 @@
+<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="r" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="2" seed="81" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter>
+    <filter id="r2" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="14" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter>
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" result="x"/><feColorMatrix in="x" type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.07"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="600" height="600" fill="#d6b483"/>
+  <rect x="95" y="120" width="410" height="360" fill="#a9cdd6" filter="url(#r)" transform="rotate(-1.5 300 300)"/>
+  <!-- fedora hat -->
+  <g filter="url(#r)" fill="none" stroke="#e0392b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M210 300 q-6 -90 90 -90 q96 0 90 90"/>
+    <path d="M165 300 q135 40 270 0 q-50 34 -135 34 q-85 0 -135 -34z"/>
+    <path d="M250 250 q50 -16 100 0"/>
+  </g>
+  <!-- music notes -->
+  <g filter="url(#r2)" fill="none" stroke="#3a55a0" stroke-width="4" stroke-linecap="round">
+    <circle cx="220" cy="430" r="16"/><line x1="236" y1="430" x2="236" y2="368"/>
+    <circle cx="360" cy="450" r="16"/><line x1="376" y1="450" x2="376" y2="380"/><path d="M236 368 q44 -8 140 12"/>
+  </g>
+  <rect width="600" height="600" filter="url(#g)" opacity="0.5"/>
+</svg>

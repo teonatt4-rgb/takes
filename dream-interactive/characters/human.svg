@@ -1,0 +1,34 @@
+<svg viewBox="0 0 320 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="r" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5"/></filter>
+  </defs>
+  <g filter="url(#r)" stroke="#3a2620" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- legs -->
+    <path d="M140 400 l-6 80" fill="none"/>
+    <path d="M180 400 l8 80" fill="none"/>
+    <ellipse cx="130" cy="486" rx="20" ry="11" fill="#3a2620"/>
+    <ellipse cx="194" cy="486" rx="20" ry="11" fill="#3a2620"/>
+    <!-- dress -->
+    <path d="M160 250 q-58 70 -54 156 q54 22 108 0 q4 -86 -54 -156z" fill="#e07a5f"/>
+    <!-- arms: left up to chin, right holding bow -->
+    <path d="M132 250 q-44 -6 -58 -44" fill="none"/>
+    <path d="M188 252 q52 6 80 -18" fill="none"/>
+    <!-- violin at chin/shoulder (left) -->
+    <g transform="rotate(-28 110 196)">
+      <path d="M96 178 q-16 8 -15 30 q1 11 9 15 q-10 6 -9 24 q1 20 19 22 q18 -2 19 -22 q1 -18 -9 -24 q8 -4 9 -15 q1 -22 -15 -30 q-6 -3 -8 0z" fill="#b5703a"/>
+      <line x1="104" y1="150" x2="104" y2="180" />
+    </g>
+    <!-- bow -->
+    <line x1="150" y1="214" x2="262" y2="232" stroke-width="3"/>
+    <!-- head -->
+    <circle cx="158" cy="150" r="42" fill="#f3cda0"/>
+    <!-- hair -->
+    <path d="M118 142 q-6 -54 42 -58 q50 -2 44 52 q-22 -22 -44 -20 q-26 -2 -42 26z" fill="#3a2620"/>
+    <!-- face -->
+    <circle cx="146" cy="152" r="3.4" fill="#3a2620" stroke="none"/>
+    <circle cx="172" cy="152" r="3.4" fill="#3a2620" stroke="none"/>
+    <path d="M150 168 q9 8 18 0" fill="none" stroke-width="3.5"/>
+    <circle cx="135" cy="163" r="6" fill="#ef9a9a" stroke="none" opacity=".6"/>
+    <circle cx="183" cy="163" r="6" fill="#ef9a9a" stroke="none" opacity=".6"/>
+  </g>
+</svg>

@@ -1,0 +1,31 @@
+<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="r" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="41" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6"/></filter>
+    <filter id="r2" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter>
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" result="x"/><feColorMatrix in="x" type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.07"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="600" height="600" fill="#f2c0cf"/>
+  <rect x="100" y="110" width="400" height="380" fill="#aacbe6" filter="url(#r)" transform="rotate(1.5 300 300)"/>
+  <!-- stem + leaves -->
+  <g filter="url(#r)" fill="none" stroke="#3a7a4a" stroke-width="4.5" stroke-linecap="round">
+    <path d="M300 470 q-10 -120 0 -190"/>
+    <path d="M300 400 q-44 -16 -64 -54 M300 400 q-2 -42 -28 -64"/>
+    <path d="M300 360 q44 -14 66 -50"/>
+  </g>
+  <!-- flower petals -->
+  <g filter="url(#r2)" fill="none" stroke="#e0392b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(300 250)">
+      <path d="M0 -8 q-36 -54 0 -78 q36 24 0 78"/>
+      <path d="M0 -8 q-36 -54 0 -78 q36 24 0 78" transform="rotate(72)"/>
+      <path d="M0 -8 q-36 -54 0 -78 q36 24 0 78" transform="rotate(144)"/>
+      <path d="M0 -8 q-36 -54 0 -78 q36 24 0 78" transform="rotate(216)"/>
+      <path d="M0 -8 q-36 -54 0 -78 q36 24 0 78" transform="rotate(288)"/>
+    </g>
+  </g>
+  <g filter="url(#r2)"><circle cx="300" cy="250" r="26" fill="#f4d24a"/></g>
+  <!-- little hearts/dots -->
+  <g filter="url(#r2)" fill="none" stroke="#3a55a0" stroke-width="3.5" stroke-linecap="round">
+    <path d="M150 170 q-10 -14 -22 -6 q-12 8 0 22 l22 18 l22 -18 q12 -14 0 -22 q-12 -8 -22 6z"/>
+  </g>
+  <rect width="600" height="600" filter="url(#g)" opacity="0.5"/>
+</svg>

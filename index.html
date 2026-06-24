@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAKES — 梁珏童 Liang Juetong</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e9e7e0;--paper-card:#fcfbf6;
+    --ink:#262420;--ink-soft:#615b51;--ink-faint:#928b7e;--line:#d6d2c6;
+    --red:#e0392b;--blue:#3a55a0;--gold:#caa23f;
+    --pink:#f2b8c6;--blue2:#a9cdd6;--yellow:#f4d24a;--lav:#c3b6e6;--mint:#a6d6c2;--coral:#ef9f86;
+    --accent:#8b6fd6;--mark:#f4d24a;
+    --display:"Fraunces","Georgia",serif;
+    --hand:"Caveat","Comic Sans MS",cursive;
+    --sans:"Inter","Noto Sans SC","Microsoft YaHei",sans-serif;
+    --cn:"Noto Sans SC","Microsoft YaHei",var(--sans);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:radial-gradient(1000px 720px at 84% -6%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 52%),var(--paper);
+    color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;
+    transition:background .9s ease;overflow-x:hidden;font-size:16px;position:relative;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;mix-blend-mode:multiply;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  ::selection{background:var(--accent);color:#fff;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;position:relative;z-index:2;}
+  .cn{font-family:var(--cn);font-weight:300;}
+
+  /* masthead */
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:46px 0 6px;flex-wrap:wrap;}
+  .mast-left{position:relative;}
+  .bigtitle{font-family:var(--display);font-weight:900;font-size:clamp(66px,13vw,148px);line-height:.84;letter-spacing:-.025em;color:var(--ink);}
+  .bigtitle .dot{color:var(--red);}
+  .underline{display:block;width:min(440px,72vw);height:20px;margin-top:-4px;color:var(--red);}
+  .tagline{font-family:var(--hand);font-weight:600;font-size:28px;color:var(--ink-soft);margin-top:8px;line-height:1.1;}
+  .tagline .cn{font-family:var(--cn);font-weight:400;font-size:13px;color:var(--ink-faint);display:block;margin-top:2px;letter-spacing:.02em;}
+  .mast-right{text-align:right;padding-top:16px;line-height:1.4;}
+  .mast-right .ml{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);}
+  .mast-right .mb{font-family:var(--display);font-weight:700;font-size:22px;margin:7px 0 6px;}
+  .mast-right .ms{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);}
+
+  .intro{color:var(--ink-soft);font-size:15.5px;max-width:720px;padding:20px 0 6px;}
+  .intro .cn{display:block;color:var(--ink-faint);font-size:13.5px;margin-top:8px;line-height:1.8;}
+
+  /* stage */
+  .stage{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:50px;align-items:center;padding:36px 0 18px;min-height:430px;}
+  .deck{position:relative;display:flex;flex-direction:column;align-items:center;}
+  .platter-area{position:relative;width:320px;height:320px;margin-top:34px;}
+  .platter-area::before{content:"";position:absolute;inset:-30px -30px -30px -30px;border-radius:10px;
+    background:color-mix(in srgb, var(--accent) 34%, var(--paper));transform:rotate(-3deg);
+    box-shadow:3px 6px 0 rgba(42,38,34,.12);z-index:0;transition:background .9s ease;}
+  .platter{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,#2a241f 0 34%,#221d19 34% 100%);box-shadow:0 22px 44px rgba(0,0,0,.4),inset 0 0 0 1px #3a322b;z-index:1;}
+  .vinyl{position:absolute;inset:14px;border-radius:50%;z-index:1;
+    background:repeating-radial-gradient(circle at 50% 50%, #0c0a09 0 2px, #18140f 2px 6px),radial-gradient(circle at 38% 32%, #2a2520 0 8%, transparent 40%),#0a0807;
+    box-shadow:0 8px 24px rgba(0,0,0,.5), inset 0 0 30px rgba(0,0,0,.8);
+    animation:spin 3.4s linear infinite;animation-play-state:paused;display:flex;align-items:center;justify-content:center;}
+  .vinyl.spin{animation-play-state:running;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .label{width:47%;height:47%;border-radius:50%;position:relative;overflow:hidden;background-size:cover;background-position:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 0 0 4px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;}
+  .lhole{position:absolute;width:13px;height:13px;border-radius:50%;background:#e9e7e0;box-shadow:0 0 0 3px rgba(0,0,0,.45);z-index:2;}
+  .tonearm{position:absolute;top:-20px;right:-22px;width:160px;height:160px;transform-origin:88% 12%;transform:rotate(-38deg);transition:transform .9s cubic-bezier(.6,.05,.3,1);z-index:4;pointer-events:none;}
+  .tonearm.down{transform:rotate(6deg);}
+  .arm-base{position:absolute;top:0;right:6px;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6a625a,#2c2723);box-shadow:0 4px 10px rgba(0,0,0,.4);}
+  .arm-rod{position:absolute;top:22px;right:21px;width:6px;height:150px;background:linear-gradient(#cfc6ba,#8a8076);border-radius:6px;transform:rotate(34deg);transform-origin:top;}
+  .arm-head{position:absolute;bottom:-2px;left:8px;width:20px;height:26px;background:#3a342d;border-radius:3px;}
+
+  .transport{display:flex;align-items:center;gap:16px;margin-top:34px;width:320px;}
+  .play{width:60px;height:60px;border-radius:50%;flex:none;cursor:pointer;border:2px solid var(--ink);background:var(--paper-card);color:var(--ink);font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s;box-shadow:2px 3px 0 rgba(42,38,34,.18);}
+  .play:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .seek-wrap{flex:1;}
+  .time{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;margin-bottom:6px;}
+  .seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:var(--line);cursor:pointer;}
+  .seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent);}
+
+  .liner{min-height:300px;}
+  .liner .count{font-family:var(--hand);font-size:18px;color:var(--ink-faint);margin-bottom:8px;}
+  .facet-tag{display:inline-block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);border:1.5px solid var(--accent);border-radius:30px;padding:5px 14px;margin-bottom:16px;}
+  .liner h2{font-family:var(--display);font-size:clamp(32px,4.6vw,50px);font-weight:900;line-height:1.0;letter-spacing:-.02em;color:var(--ink);}
+  .liner h2 .cn{display:block;font-family:var(--cn);font-size:15px;font-weight:400;color:var(--ink-faint);margin-top:10px;letter-spacing:.03em;}
+  .liner .role{font-family:var(--display);font-style:italic;color:var(--ink-soft);font-size:15px;margin:15px 0 16px;line-height:1.5;}
+  .liner .note{color:var(--ink-soft);font-size:15.5px;max-width:580px;line-height:1.72;}
+  .liner .note i{color:var(--ink);font-style:italic;}
+  .liner .note .cn{display:block;color:var(--ink-faint);font-size:13.5px;margin-top:10px;line-height:1.85;}
+  .fade-swap{animation:fadeup .5s ease;}
+  @keyframes fadeup{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  /* section heads */
+  .rack-head{display:flex;align-items:baseline;gap:16px;margin:44px 0 18px;flex-wrap:wrap;}
+  .rack-head .k{font-family:var(--display);font-weight:900;font-size:30px;color:var(--ink);letter-spacing:-.01em;
+    background:linear-gradient(transparent 62%, var(--mark) 62%, var(--mark) 92%, transparent 92%);padding:0 2px;}
+  .rack-head .hint{font-family:var(--hand);font-size:18px;color:var(--ink-faint);}
+
+  /* rack — taped photo cards */
+  .rack{display:flex;gap:18px;overflow-x:auto;padding:14px 4px 26px;scroll-snap-type:x mandatory;}
+  .rack::-webkit-scrollbar{height:7px;}
+  .rack::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+  .sleeve{flex:none;width:138px;cursor:pointer;scroll-snap-align:start;background:var(--paper-card);
+    padding:9px 9px 11px;border-radius:3px;box-shadow:2px 3px 0 rgba(42,38,34,.13),0 10px 22px rgba(0,0,0,.12);
+    transition:transform .25s ease,box-shadow .25s ease;}
+  .sleeve:nth-child(odd){transform:rotate(-1.6deg);}
+  .sleeve:nth-child(even){transform:rotate(1.4deg);}
+  .sleeve:hover{transform:rotate(0) translateY(-6px);box-shadow:3px 5px 0 rgba(42,38,34,.16),0 16px 30px rgba(0,0,0,.16);}
+  .cover{width:100%;aspect-ratio:1;border-radius:2px;position:relative;overflow:hidden;background-size:cover;background-position:center;}
+  .cover .cnum{position:absolute;top:6px;left:9px;font-family:var(--display);font-size:22px;font-weight:900;color:#2a2622;opacity:.55;line-height:1;}
+  .cover .cfacet{position:absolute;bottom:6px;left:9px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#2a2622;opacity:.5;}
+  .sleeve.active{box-shadow:0 0 0 2.5px var(--red),2px 3px 0 rgba(42,38,34,.13),0 12px 26px rgba(0,0,0,.16);}
+  .sleeve .st{font-family:var(--display);font-weight:700;font-size:13px;margin-top:8px;color:var(--ink);line-height:1.2;}
+  .sleeve .sc{font-family:var(--hand);font-size:14px;color:var(--ink-faint);}
+  .rack-div{flex:none;width:2px;background:var(--line);margin:10px 6px;align-self:stretch;border-radius:2px;}
+  .rep-label{flex:none;align-self:center;writing-mode:vertical-rl;font-family:var(--hand);font-size:15px;color:var(--ink-faint);}
+  .sleeve.rep{width:108px;}
+
+  /* scores */
+  .scores-note{font-size:12.5px;color:var(--ink-faint);margin:-4px 0 18px;}
+  .scores{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;}
+  .score{cursor:pointer;background:var(--paper-card);padding:8px 8px 10px;border-radius:3px;box-shadow:2px 3px 0 rgba(42,38,34,.12),0 8px 18px rgba(0,0,0,.1);transition:transform .25s ease,box-shadow .25s ease;}
+  .score:nth-child(3n){transform:rotate(-1.3deg);} .score:nth-child(3n+1){transform:rotate(1.1deg);}
+  .score:hover{transform:rotate(0) translateY(-5px);box-shadow:3px 5px 0 rgba(42,38,34,.15),0 16px 28px rgba(0,0,0,.16);}
+  .score .thumb{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:2px;background:#fff;display:block;}
+  .score .stitle{font-family:var(--display);font-weight:700;font-size:12.5px;margin-top:8px;color:var(--ink);line-height:1.2;}
+  .score .stag{font-family:var(--hand);font-size:13px;color:var(--ink-faint);}
+
+  /* lightbox */
+  .lightbox{position:fixed;inset:0;z-index:60;background:rgba(28,22,16,.92);display:none;align-items:center;justify-content:center;padding:30px;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-height:92vh;max-width:min(700px,92vw);border-radius:4px;box-shadow:0 24px 70px rgba(0,0,0,.6);}
+  .lightbox .close{position:absolute;top:18px;right:24px;font-size:26px;color:#fff;cursor:pointer;background:none;border:none;line-height:1;}
+
+  /* enter dream */
+  .enter-dream{margin-top:22px;padding:12px 24px;background:var(--ink);border:2px solid var(--ink);color:var(--paper);border-radius:30px;cursor:pointer;font-family:var(--sans);font-size:13px;letter-spacing:.04em;transition:.25s;box-shadow:2px 3px 0 rgba(42,38,34,.2);}
+  .enter-dream:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .enter-dream span{opacity:.7;font-size:11px;margin-left:5px;}
+
+  /* dream overlay */
+  .dream-overlay{position:fixed;inset:0;z-index:70;background:#000;display:none;}
+  .dream-overlay.show{display:block;}
+  .dream-overlay iframe{width:100%;height:100%;border:0;display:block;}
+  .dream-overlay .close{position:absolute;top:14px;left:16px;z-index:71;padding:9px 18px;background:rgba(20,12,14,.6);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:30px;cursor:pointer;font-size:13px;backdrop-filter:blur(4px);}
+
+  /* approach — cut paper block */
+  .approach{margin-top:48px;padding:42px 40px 36px;background:var(--blue2);border-radius:5px;position:relative;
+    box-shadow:3px 6px 0 rgba(42,38,34,.13),0 16px 34px rgba(0,0,0,.1);transform:rotate(-.5deg);
+    display:grid;grid-template-columns:190px 1fr;gap:36px;}
+  .approach::before{content:"";position:absolute;top:-14px;left:46px;width:110px;height:28px;background:rgba(244,210,74,.6);transform:rotate(-3deg);box-shadow:0 2px 5px rgba(0,0,0,.12);}
+  .approach .k{font-family:var(--display);font-weight:900;font-size:34px;color:var(--ink);}
+  .approach .k .cn{display:block;font-family:var(--hand);font-weight:600;color:#2a4a55;font-size:20px;margin-top:2px;}
+  .approach .body{max-width:680px;}
+  .approach p{font-size:16px;color:#23332f;margin-bottom:16px;line-height:1.78;}
+  .approach p.lead{font-family:var(--display);font-size:22px;color:var(--ink);line-height:1.45;font-weight:400;font-style:italic;}
+  .approach .cn-block{color:#2c3f3a;font-size:13.5px;line-height:1.9;border-left:3px solid var(--red);padding-left:18px;margin-top:22px;}
+
+  .closing{text-align:center;padding:66px 0 30px;}
+  .closing p{font-family:var(--hand);font-weight:700;font-size:clamp(30px,5vw,52px);max-width:760px;margin:0 auto;line-height:1.25;color:var(--ink);}
+  .closing .cn{display:block;font-family:var(--cn);font-weight:300;font-size:14px;color:var(--ink-faint);margin-top:16px;line-height:1.8;}
+  .sign{margin-top:24px;font-family:var(--hand);font-weight:700;font-size:24px;color:var(--blue);}
+  footer{text-align:center;color:var(--ink-faint);font-size:11.5px;letter-spacing:.1em;padding:14px 0 46px;border-top:1px solid var(--line);margin-top:30px;}
+
+  @media(max-width:820px){
+    .masthead{flex-direction:column;}
+    .mast-right{text-align:left;padding-top:4px;}
+    .stage{grid-template-columns:1fr;gap:44px;justify-items:center;text-align:center;}
+    .liner{text-align:center;}.liner .note{margin:0 auto;}
+    .approach{grid-template-columns:1fr;gap:14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="mast-left">
+      <h1 class="bigtitle">TAKES<span class="dot">.</span></h1>
+      <svg class="underline" viewBox="0 0 440 20" preserveAspectRatio="none"><path d="M5 13 Q 110 4 215 11 T 435 8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M10 17 Q 150 11 290 15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
+      <p class="tagline">Six ways of making jazz my own
+        <span class="cn">六种把爵士变成自己声音的方式</span></p>
+    </div>
+    <div class="mast-right">
+      <div class="ml">A Jazz Portfolio</div>
+      <div class="mb">梁珏童<br>Liang Juetong</div>
+      <div class="ms">Violin · 2022–2026</div>
+    </div>
+  </header>
+
+  <p class="intro">
+    I trained as a classical violinist and found my way into jazz — an instrument you rarely hear in this
+    music. TAKES is not a tidy catalogue; it's a record of how a player turns borrowed language into a voice
+    of her own, from the first standard I ever picked up to a work entirely my own. Choose a record to begin.
+    <span class="cn">我是古典出身的小提琴手，后来一头扎进了爵士——一件你很少在爵士里听到的乐器。TAKES 不是一份整齐的曲目表，而是一个演奏者如何把"借来的语言"变成"自己的声音"的记录：从我上手的第一首标准曲，到一首完全属于自己的作品。选一张唱片，开始。</span>
+  </p>
+
+  <div class="stage">
+    <div class="deck">
+      <div class="platter-area">
+        <div class="platter"></div>
+        <div class="vinyl" id="vinyl"><div class="label" id="label"><span class="lhole"></span></div></div>
+        <div class="tonearm" id="tonearm"><div class="arm-rod"></div><div class="arm-base"></div><div class="arm-head"></div></div>
+      </div>
+      <div class="transport">
+        <button class="play" id="play" aria-label="play">▶</button>
+        <div class="seek-wrap">
+          <div class="time"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+          <input type="range" class="seek" id="seek" value="0" min="0" max="1000">
+        </div>
+      </div>
+    </div>
+    <div class="liner" id="liner"></div>
+  </div>
+
+  <div class="rack-head">
+    <span class="k">The Record Rack</span>
+    <span class="hint">点一张唱片放上转盘 · click a record to play →</span>
+  </div>
+  <div class="rack" id="rack"></div>
+
+  <!-- SCORES -->
+  <div class="rack-head" style="margin-top:20px;">
+    <span class="k">Scores &amp; Arrangements</span>
+    <span class="hint">曲谱与编曲 · 点击放大 click to enlarge</span>
+  </div>
+  <p class="scores-note">Preview images only — watermarked and low-resolution; full scores available on request.<br><span class="cn">仅为带水印的低清预览图，完整乐谱可应要求提供。</span></p>
+  <div class="scores" id="scores"></div>
+
+  <!-- APPROACH -->
+  <section class="approach">
+    <div class="k">Approach<span class="cn">自述</span></div>
+    <div class="body">
+      <p class="lead">I was trained to render a score faithfully. Jazz taught me to ask a different question: not how to play a piece, but how to make it mine.</p>
+      <p>Strings, the European canon, the discipline of notation — that is where I come from. Jazz arrived later, and the violin is a stranger in it; that distance is exactly what I want to explore. Across four years of listening, transcribing and deciding, I can no longer trace where each phrase began — which is precisely when a borrowed language starts to become a voice.</p>
+      <p>I think of improvising and arranging as a <i>human generative system</i> — one that now stands beside machine generation, in dialogue with it rather than replaced by it. That question runs through everything here, and becomes the explicit subject of my original work, <i>Dream of Martian Consciousness</i>. The classical canon is not the whole of music; jazz, and the music still being written now, leaves so much left to explore. That is the work I intend to keep doing.</p>
+      <p class="cn-block">我受的训练，是忠实地呈现一份乐谱；而爵士教会我问另一个问题——不是"如何演奏一首曲子"，而是"如何让它成为我的"。弦乐、欧洲经典、记谱的纪律，是我的来处；爵士来得更晚，小提琴在其中是个外来者，而这段距离正是我想探索的。四年的聆听、扒谱与抉择之后，我已记不清每个乐句的起点——而那恰恰是"借来的语言"开始成为"声音"的时刻。我把即兴与编配视为一种"人的生成系统"，它与今天的机器生成并置、对话，而非被取代。这个命题贯穿这里的一切，并在我的原创作品《梦的火星意识》中成为明确的主题。古典并非音乐的全部；爵士，以及此刻仍在被书写的音乐，还有那么多值得探索的地方。这就是我想一直做下去的事。</p>
+    </div>
+  </section>
+
+  <div class="closing">
+    <p>Classical was where I began; jazz is where I keep asking. This is the voice I'm still building — one record at a time.
+      <span class="cn">古典是我的起点，爵士是我不断发问的地方。这是我仍在塑造的声音——一张唱片，一张唱片地。</span></p>
+    <div class="sign">— 梁珏童 Liang Juetong</div>
+  </div>
+  <footer>© <span id="yr"></span> 梁珏童 Liang Juetong · TAKES — A Jazz Portfolio</footer>
+</div>
+
+<div class="lightbox" id="lightbox"><button class="close" onclick="closeLight()">✕</button><img id="lightimg" src="" alt="score" draggable="false" oncontextmenu="return false"></div>
+<div class="dream-overlay" id="dreamOverlay"><button class="close" onclick="closeDream()">✕ 关闭 Close</button><iframe id="dreamFrame" title="Dream of Martian Consciousness — interactive"></iframe></div>
+
+<audio id="audio" preload="none"></audio>
+<script>
+const TRACKS=[
+ {num:"01",facet:"Create",facetCn:"创造",title:"Dream of Martian Consciousness",titleCn:"梦的火星意识 · 原创作曲",
+  color:"#8b6fd6",src:"audio/01-dream-of-mars.mp3",art:"covers/01-dream.svg",main:true,interactive:"dream-interactive/",
+  role:"Original composition for two violins, cello &amp; piano · both violins performed and multi-tracked by me, cello and piano realised as synthesised voices · written and mixed in Sibelius · 梁珏童",
+  note:"Written for my third-year jazz composition course, this piece stages a dialogue between the human and the machine. The two violins — both me — are one self in conversation with another; the synthesised cello and piano are the machine's voice. I didn't disguise that artificiality; I made it the subject. Inside an act of creation increasingly mediated by machines, what still remains human? I'm drawn to planets and to films like <i>Dune</i> and <i>Interstellar</i> — not to copy their scores, but to reach for that same vastness: staying myself, and finding my own planet in the universe.",
+  noteCn:"大三爵士创编课的作品，演的是一场人与机器的对话。两把小提琴——都是我——是一个自我与另一个自我的交谈；合成的大提琴与钢琴，是机器的声音。我没有掩饰这种合成音色的“非真实”，而是把它变成了主题本身：在一个越来越被机器中介的创作里，究竟什么仍然属于人？我对星球和天文着迷，也喜欢《沙丘》《星际穿越》——不是模仿它们的音乐，而是想要那种辽阔：永远做自己，并在宇宙中找到属于自己的星球。"},
+ {num:"02",facet:"Transform",facetCn:"转化",title:"Despacito",titleCn:"个人改编",
+  color:"#46b39d",src:"audio/02-despacito.mp3",art:"covers/02-despacito.svg",main:true,
+  role:"Arranged for two violins &amp; drums · arrangement, rhythmic design &amp; second violin by 梁珏童",
+  note:"My first arrangement, written as a freshman just learning to compose — and to use Sibelius. The song was everywhere that year, and back in high school a friend and I had a routine: she sang pop, I played. I chose it for a competition out of pure curiosity, studied the groove across many recordings, and rebuilt the rhythm as my own. It was the first time I made something — and my first duo.",
+  noteCn:"我的第一个改编，大一刚入学、刚开始学创作和西贝柳斯时做的。那年这首歌很火；高中时我和一个唱流行的好朋友常有个默契——她唱，我拉。出于好奇选它去比赛，为了节奏听了很多个版本，再把律动重做成自己的。这是我第一次做出一个作品，也是第一次做二重奏。"},
+ {num:"03",facet:"Collaborate",facetCn:"合作",title:"Tea for Two",titleCn:"改编 · 即兴",
+  color:"#d98a9e",src:"audio/03-tea-for-two.mp3",art:"covers/03-tea.svg",main:true,
+  role:"Lead violin &amp; arrangement by 梁珏童 · with guitar comping",
+  note:"I first heard this getting into jazz in high school — including Lisa Ono's vocal version. It's unhurried and warm, the perfect thing for an afternoon. I arranged it and wrote my own solo over a guitar comping behind me.",
+  noteCn:"高中刚接触爵士时就听过这首，也听过小野丽莎唱的版本。松弛又好听，特别适合配一个慵懒的下午。我做了改编、写了自己的即兴，由一把吉他在后面comping伴奏。"},
+ {num:"04",facet:"Arrange",facetCn:"编排",title:"Armando's Rhumba",titleCn:"个人编曲 · 拉丁爵士",
+  color:"#d8884f",src:"audio/04-armandos-rhumba.mp3",art:"covers/04-armando.svg",main:true,
+  role:"Composed by Chick Corea · lead violin &amp; arrangement by 梁珏童 · over a backing track",
+  note:"At first the tune did nothing for me. Then, in my second year, I heard a senior play it live at his graduation recital, and the Latin pulse underneath finally caught me. That was what made me arrange it and improvise a version of my own.",
+  noteCn:"其实一开始我并不觉得这首好听。直到大二，听了一位师兄毕业考试的现场，被它底下真正的拉丁律动吸引，最后才动手做了自己的改编与即兴。"},
+ {num:"05",facet:"Improvise",facetCn:"即兴",title:"Beautiful Love",titleCn:"个人即兴",
+  color:"#5b9bd5",src:"audio/05-beautiful-love.mp3",art:"covers/05-beautiful.svg",main:true,
+  role:"Improvised lead violin by 梁珏童 · over a backing track",
+  note:"In 2021, before I'd even enrolled, I heard my teacher Li Zexi perform this and fell for it. Once I was in, I wanted an improvisation of my own — something sweet, full of quiet longing.",
+  noteCn:"2021年我还没入学时，去听了李泽熙老师演奏的版本，特别喜欢。进了大学后，我想写一段属于自己的即兴——是那种很甜美、带着憧憬的感觉。"},
+ {num:"06",facet:"Drive",facetCn:"能量",title:"Minor Swing",titleCn:"吉普赛爵士",
+  color:"#d85a5a",src:"audio/06-minor-swing.mp3",art:"covers/06-minor.svg",main:true,
+  role:"Gypsy-jazz · lead violin by 梁珏童 · over a backing track",
+  note:"The first jazz tune I ever played. It's gypsy-style, and that rhythm caught me on contact. Everything here started with this one.",
+  noteCn:"这首是我最最最开始的爵士曲，第一首上手接触的。吉普赛风格，那个节奏一下就抓住了我。这里的一切，都是从这首开始的。"},
+ {num:"07",facet:"Repertoire",facetCn:"曲库",title:"Body and Soul",titleCn:"Johnny Green",color:"#c98b8b",src:"audio/body-and-soul.mp3",art:"covers/07-body.svg",main:false,
+  role:"Arranged &amp; performed by 梁珏童",
+  note:"One of the later arrangements, written in my third and fourth years — as my playing matured, so did the improvising.",
+  noteCn:"大三、大四写的后期改编之一——演奏越来越熟，即兴也随之不同。"},
+ {num:"08",facet:"Repertoire",facetCn:"曲库",title:"Blue Bossa",titleCn:"Kenny Dorham",color:"#5b9bd5",src:"audio/blue-bossa.mp3",art:"covers/08-blue-bossa.svg",main:false,
+  role:"Performed by 梁珏童",
+  note:"Part of the wider repertoire I keep playing and reworking.",
+  noteCn:"我持续在演奏、打磨的曲库之一。"},
+ {num:"09",facet:"Repertoire",facetCn:"曲库",title:"Song for My Father",titleCn:"Horace Silver",color:"#d8a657",src:"audio/song-for-my-father.mp3",art:"covers/09-song-father.svg",main:false,
+  role:"Performed by 梁珏童",
+  note:"Part of the wider repertoire I keep playing and reworking.",
+  noteCn:"我持续在演奏、打磨的曲库之一。"},
+ {num:"10",facet:"Repertoire",facetCn:"曲库",title:"What a Difference a Day Made",titleCn:"María Grever",color:"#7faa6a",src:"audio/what-a-difference.mp3",art:"covers/10-what-difference.svg",main:false,
+  role:"Performed by 梁珏童",
+  note:"Part of the wider repertoire I keep playing and reworking.",
+  noteCn:"我持续在演奏、打磨的曲库之一。"},
+];
+
+const $=s=>document.querySelector(s);
+const audio=$("#audio"),vinyl=$("#vinyl"),tonearm=$("#tonearm"),playBtn=$("#play"),label=$("#label");
+const mains=TRACKS.filter(t=>t.main).length;
+$("#yr").textContent=new Date().getFullYear();
+
+const rack=$("#rack");
+TRACKS.filter(t=>t.main).forEach((t)=>rack.appendChild(makeSleeve(t,TRACKS.indexOf(t))));
+const div=document.createElement("div");div.className="rack-div";rack.appendChild(div);
+const repL=document.createElement("div");repL.className="rep-label";repL.textContent="Also in the book";rack.appendChild(repL);
+TRACKS.forEach((t,i)=>{if(!t.main)rack.appendChild(makeSleeve(t,i,true));});
+
+function makeSleeve(t,i,rep){
+  const el=document.createElement("div");
+  el.className="sleeve"+(rep?" rep":"");el.dataset.i=i;
+  const bg=t.art?`background-image:url(${t.art})`:`background:linear-gradient(145deg,${t.color},${shade(t.color,-55)})`;
+  el.innerHTML=`<div class="cover" style="${bg}"><div class="cnum">${t.num}</div><div class="cfacet">${t.facet}</div></div>
+    <div class="st">${t.title}</div><div class="sc">${t.facetCn}</div>`;
+  el.addEventListener("click",()=>select(i,true));
+  return el;
+}
+function shade(hex,p){let n=parseInt(hex.slice(1),16),r=(n>>16)+p,g=(n>>8&255)+p,b=(n&255)+p;
+  r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
+  return"#"+(1<<24|r<<16|g<<8|b).toString(16).slice(1);}
+
+function select(i,autoplay){
+  const t=TRACKS[i];
+  document.documentElement.style.setProperty("--accent",t.color);
+  label.style.background=t.art?`url(${t.art}) center/cover`:`linear-gradient(140deg,${t.color},${shade(t.color,-90)})`;
+  const counter=t.main?`Take ${t.num} / 0${mains}`:`Repertoire`;
+  $("#liner").innerHTML=`<div class="fade-swap">
+      <div class="count">${counter}</div>
+      <span class="facet-tag">${t.facet} · ${t.facetCn}</span>
+      <h2>${t.title}<span class="cn">${t.titleCn}</span></h2>
+      <p class="role">${t.role}</p>
+      <p class="note">${t.note}<span class="cn">${t.noteCn}</span></p>
+      ${t.interactive?`<button class="enter-dream" onclick="openDream('${t.interactive}')">Enter the dream ↗<span>进入交互混音</span></button>`:""}
+    </div>`;
+  document.querySelectorAll(".sleeve").forEach(s=>s.classList.toggle("active",+s.dataset.i===i));
+  audio.src=t.src;audio.load();
+  if(autoplay){audio.play().catch(()=>{});}else{setPlaying(false);}
+}
+function setPlaying(on){vinyl.classList.toggle("spin",on);tonearm.classList.toggle("down",on);playBtn.textContent=on?"❚❚":"▶";}
+playBtn.addEventListener("click",()=>{audio.paused?audio.play().catch(()=>{}):audio.pause();});
+audio.addEventListener("play",()=>setPlaying(true));
+audio.addEventListener("pause",()=>setPlaying(false));
+audio.addEventListener("ended",()=>setPlaying(false));
+const fmt=s=>isNaN(s)?"0:00":Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+audio.addEventListener("loadedmetadata",()=>$("#dur").textContent=fmt(audio.duration));
+audio.addEventListener("timeupdate",()=>{$("#cur").textContent=fmt(audio.currentTime);$("#seek").value=audio.duration?(audio.currentTime/audio.duration*1000):0;});
+$("#seek").addEventListener("input",e=>{if(audio.duration)audio.currentTime=e.target.value/1000*audio.duration;});
+select(0,false);
+
+// ===== scores gallery =====
+const SCORES=[
+ {s:"dream-of-mars",t:"Dream of Martian Consciousness",tag:"Original · 原创"},
+ {s:"despacito",t:"Despacito",tag:"Arrangement · 改编"},
+ {s:"tea-for-two",t:"Tea for Two",tag:"Arrangement · 改编"},
+ {s:"armandos-rhumba",t:"Armando's Rhumba",tag:"Arrangement · 编曲"},
+ {s:"beautiful-love-solo",t:"Beautiful Love",tag:"Improvisation · 即兴"},
+ {s:"minor-swing",t:"Minor Swing",tag:"Arrangement · 改编"},
+ {s:"body-and-soul",t:"Body and Soul",tag:"Arrangement · 改编"},
+ {s:"blue-bossa",t:"Blue Bossa",tag:"Arrangement · 改编"},
+ {s:"song-for-my-father",t:"Song for My Father",tag:"Arrangement · 改编"},
+ {s:"what-a-difference",t:"What a Difference a Day Made",tag:"Arrangement · 改编"},
+ {s:"bossa-antigua",t:"Bossa Antigua",tag:"Arrangement · 改编"},
+ {s:"pent-up-house",t:"Pent Up House",tag:"Arrangement · 改编"},
+ {s:"blue-moon",t:"Blue Moon",tag:"Arrangement · 改编"},
+ {s:"rose-room",t:"Rose Room",tag:"Arrangement · 改编"},
+ {s:"the-gift",t:"The Gift",tag:"Arrangement · 改编"},
+ {s:"watch-what-happens",t:"Watch What Happens",tag:"Arrangement · 改编"},
+];
+const scoresEl=document.getElementById("scores");
+SCORES.forEach(o=>{
+  const d=document.createElement("div");d.className="score";
+  d.innerHTML=`<img class="thumb" src="scores/${o.s}.jpg" alt="${o.t}" draggable="false" oncontextmenu="return false" loading="lazy"><div class="stitle">${o.t}</div><div class="stag">${o.tag}</div>`;
+  d.addEventListener("click",()=>openLight(`scores/${o.s}.jpg`));
+  scoresEl.appendChild(d);
+});
+function openLight(src){const i=document.getElementById("lightimg");i.src=src;document.getElementById("lightbox").classList.add("show");}
+function closeLight(){document.getElementById("lightbox").classList.remove("show");document.getElementById("lightimg").src="";}
+document.getElementById("lightbox").addEventListener("click",e=>{if(e.target.id==="lightbox")closeLight();});
+
+// ===== dream interactive overlay =====
+function openDream(src){audio.pause();document.getElementById("dreamFrame").src=src;document.getElementById("dreamOverlay").classList.add("show");}
+function closeDream(){document.getElementById("dreamOverlay").classList.remove("show");document.getElementById("dreamFrame").src="";}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeLight();closeDream();}});
+</script>
+</body>
+</html>
