@@ -203,14 +203,17 @@ function buildBillboard(src, h){
 }
 function loadCharacter(url, h, fallbackSrc){
   const g = new THREE.Group();
-  g.userData = { baseY:0, mixer:null, spin:0 };
+  g.userData = { baseY:0, mixer:null, spin:0, loading:false, loaded:false, loadModel:null };
   let fallback = null;
   if(fallbackSrc){
     fallback = buildBillboard(fallbackSrc, h);
     fallback.position.y = fallback.userData.baseY;
     g.add(fallback);
   }
-  new GLTFLoader().load(url, (gltf)=>{
+  g.userData.loadModel = ()=>{
+    if(g.userData.loading || g.userData.loaded) return;
+    g.userData.loading = true;
+    new GLTFLoader().load(url, (gltf)=>{
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = new THREE.Vector3(); box.getSize(size);
@@ -225,7 +228,9 @@ function loadCharacter(url, h, fallbackSrc){
       mixer.clipAction(gltf.animations[0]).play();
       g.userData.mixer = mixer;
     }
-  }, undefined, (err)=>{ console.warn('glb load error, keeping fallback', url, err); });
+    g.userData.loaded = true;
+  }, undefined, (err)=>{ g.userData.loading = false; console.warn('glb load error, keeping fallback', url, err); });
+  };
   return g;
 }
 function buildHuman(){ return loadCharacter('models/violinist.glb', 1.8, 'characters/human.png'); }
@@ -314,14 +319,12 @@ function makeFootagePlanet(o){
   lx.shadowColor='rgba(0,0,0,0.75)'; lx.shadowBlur=12; lx.fillText(o.label,128,40);
   const label=new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(lc), transparent:true, depthWrite:false }));
   label.scale.set(o.r*2.4, o.r*0.68, 1); label.position.set(0, o.r+0.55, 0); g.add(label);
-  // flat video screen in FRONT of the sphere (hidden until played)
-  const v=document.createElement('video'); v.src=o.src; v.loop=true; v.playsInline=true; v.crossOrigin='anonymous'; v.preload='metadata';
-  const vidTex=new THREE.VideoTexture(v); vidTex.colorSpace=THREE.SRGBColorSpace;
+  // flat video screen in FRONT of the sphere, created only when clicked
   const w=o.r*1.95;
-  const screen=new THREE.Mesh(new THREE.PlaneGeometry(w, w*0.5625), new THREE.MeshBasicMaterial({ map:vidTex }));
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(w, w*0.5625), new THREE.MeshBasicMaterial({ color:0x050505 }));
   screen.position.z=o.r+0.06; screen.visible=false; g.add(screen);
   g.position.set(o.x,o.y,o.z);
-  g.userData={ sphere, screen, label, video:v, vidTex, playing:false, home:new THREE.Vector3(o.x,o.y,o.z), tpos:new THREE.Vector3(o.x,o.y,o.z), tscale:1, spin:o.spin||0.15 };
+  g.userData={ sphere, screen, label, video:null, vidTex:null, src:o.src, playing:false, home:new THREE.Vector3(o.x,o.y,o.z), tpos:new THREE.Vector3(o.x,o.y,o.z), tscale:1, spin:o.spin||0.15 };
   return g;
 }
 function makeAstronaut(){
@@ -349,11 +352,16 @@ function buildStars(){
 function onResize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); }
 
 // ---------- audio ----------
-const STEMS = { mix:'stems/mix.mp3' };
-let actx, buffers={}, srcs={}, humanBus, machineBus, masterGain, analH, analM, dataH, dataM, playing=false, muted=false, audioReady=false;
+const MIX_SRC = 'stems/mix.mp3';
+let actx, audioEl, mediaSrc, humanBus, machineBus, masterGain, analH, analM, dataH, dataM, playing=false, muted=false, audioReady=false;
 
-async function loadAudio(){
+function loadAudio(){
+  if(audioReady) return;
   actx = new (window.AudioContext||window.webkitAudioContext)();
+  audioEl = new Audio(MIX_SRC);
+  audioEl.loop = true;
+  audioEl.preload = 'auto';
+  audioEl.crossOrigin = 'anonymous';
   masterGain = actx.createGain(); masterGain.connect(actx.destination);
   humanBus = actx.createGain(); machineBus = actx.createGain();
   analH = actx.createAnalyser(); analM = actx.createAnalyser();
@@ -361,24 +369,15 @@ async function loadAudio(){
   dataH = new Uint8Array(analH.frequencyBinCount); dataM = new Uint8Array(analM.frequencyBinCount);
   humanBus.connect(analH); machineBus.connect(analM);
   humanBus.connect(masterGain); machineBus.connect(masterGain);
-  const names = Object.keys(STEMS);
-  await Promise.all(names.map(async n=>{
-    const r = await fetch(STEMS[n], { cache:'force-cache' });
-    if(!r.ok) throw new Error(`${STEMS[n]} ${r.status}`);
-    const ab = await r.arrayBuffer();
-    buffers[n] = await actx.decodeAudioData(ab);
-  }));
+  mediaSrc = actx.createMediaElementSource(audioEl);
+  mediaSrc.connect(humanBus);
+  mediaSrc.connect(machineBus);
   audioReady = true;
 }
-function startPlayback(){
+async function startPlayback(){
   if(playing) return;
-  const t = actx.currentTime + 0.06;
-  for(const n of Object.keys(STEMS)){
-    if(!buffers[n]) continue;
-    const s = actx.createBufferSource(); s.buffer = buffers[n]; s.loop = true;
-    s.connect(n==='mix' || n.startsWith('vln') ? humanBus : machineBus);
-    s.start(t); srcs[n] = s;
-  }
+  if(actx && actx.state==='suspended') await actx.resume();
+  await audioEl.play();
   playing = true;
   playBtn.textContent='||';
   applyMix();
@@ -470,11 +469,12 @@ document.getElementById('enterBtn').addEventListener('click', async ()=>{
   panel.classList.add('on');
   document.getElementById('stateLabel').classList.add('on');
   loadingEl.classList.add('on');
+  if(human?.userData.loadModel) human.userData.loadModel();
+  if(robot?.userData.loadModel) robot.userData.loadModel();
   try{
-    if(!audioReady) await loadAudio();
-    if(actx && actx.state==='suspended') await actx.resume();
-    startPlayback();
-    loadingEl.classList.remove('on');
+    if(!audioReady) loadAudio();
+    startPlayback().then(()=>loadingEl.classList.remove('on')).catch(()=>{});
+    setTimeout(()=>loadingEl.classList.remove('on'), 1200);
   }catch(e){
     errEl.style.display='block';
     errEl.textContent = '画面已进入，但声音载入失败（请用 http://localhost:4321/dream-interactive/ 打开，别直接双击文件）：'+e.message;
@@ -501,19 +501,31 @@ function resetFootageLayout(){
   footagePlanets.forEach(p=>{ p.visible=true; p.userData.tpos.copy(p.userData.home); p.userData.tscale=1; p.userData.screen.visible=false; });
 }
 function stopFootage(i){
-  const u=footagePlanets[i].userData; u.video.pause(); u.screen.visible=false; u.playing=false;
+  const u=footagePlanets[i].userData; if(u.video) u.video.pause(); u.screen.visible=false; u.playing=false;
   document.getElementById('foot'+(i+1)).style.opacity='0.6';
 }
 function playFootage(i){
   const p=footagePlanets[i], u=p.userData;
-  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); paused=false; playBtn.textContent='||'; } return; }
+  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); if(audioEl) audioEl.play().catch(()=>{}); paused=false; playBtn.textContent='||'; } return; }
   footagePlanets.forEach((pp,j)=>{ if(pp.userData.playing) stopFootage(j); });
-  if(actx && actx.state==='running'){ actx.suspend(); paused=true; playBtn.textContent='>'; }
+  if(actx && actx.state==='running'){ actx.suspend(); if(audioEl) audioEl.pause(); paused=true; playBtn.textContent='>'; }
   // bring this planet to centre + enlarge, show its front screen, hide the other planet
   footagePlanets.forEach((pp,j)=>{
     if(j===i){ pp.visible=true; pp.userData.tpos.set(0,2.8,-5); pp.userData.tscale=2.0; }
     else { pp.visible=false; }
   });
+  if(!u.video){
+    u.video=document.createElement('video');
+    u.video.src=u.src;
+    u.video.loop=true;
+    u.video.playsInline=true;
+    u.video.crossOrigin='anonymous';
+    u.video.preload='metadata';
+    u.vidTex=new THREE.VideoTexture(u.video);
+    u.vidTex.colorSpace=THREE.SRGBColorSpace;
+    u.screen.material.map=u.vidTex;
+    u.screen.material.needsUpdate=true;
+  }
   u.video.muted=false; u.video.currentTime=0; u.video.play().catch(()=>{});
   u.screen.visible=true; u.playing=true;
   document.getElementById('foot'+(i+1)).style.opacity='1';
