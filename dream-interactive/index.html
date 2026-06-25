@@ -73,10 +73,10 @@
     <span class="lab m">MACHINE 机器</span>
   </div>
   <div class="btns">
-    <button id="playBtn" title="播放/暂停">❚❚</button>
-    <button id="muteBtn" title="静音">🔊</button>
-    <button id="foot1" title="声部一实拍" style="opacity:.6">🎻1</button>
-    <button id="foot2" title="声部二实拍" style="opacity:.6">🎻2</button>
+    <button id="playBtn" title="Play/Pause">||</button>
+    <button id="muteBtn" title="Mute">M</button>
+    <button id="foot1" title="Performance video 1" style="opacity:.6">V1</button>
+    <button id="foot2" title="Performance video 2" style="opacity:.6">V2</button>
   </div>
 </div>
 
@@ -177,8 +177,8 @@ function initScene(){
   const moonIndex = planets.findIndex(p=>p.userData.isMoon);
   // two "performance planets" — your real footage, played on demand via the buttons
   footagePlanets = [
-    makeFootagePlanet({ label:'声部一', btn:'🎻1', tex:'2k_jupiter.jpg', src:'footage/vln1.mp4', r:1.6, x:-3.6, y:3.6, z:-9, spin:0.2 }),
-    makeFootagePlanet({ label:'声部二', btn:'🎻2', tex:'2k_neptune.jpg', src:'footage/vln2.mp4', r:1.6, x:3.6,  y:3.6, z:-9, spin:0.2 })
+    makeFootagePlanet({ label:'Part 1', btn:'V1', tex:'2k_jupiter.jpg', src:'footage/vln1.mp4', r:1.6, x:-3.6, y:3.6, z:-9, spin:0.2 }),
+    makeFootagePlanet({ label:'Part 2', btn:'V2', tex:'2k_neptune.jpg', src:'footage/vln2.mp4', r:1.6, x:3.6,  y:3.6, z:-9, spin:0.2 })
   ];
   footagePlanets.forEach(p=>scene.add(p));
   // astronauts: all gathered on the MOON, big enough to see
@@ -201,9 +201,15 @@ function buildBillboard(src, h){
   m.userData = { mat, baseY: h/2 };
   return m;
 }
-function loadCharacter(url, h){
+function loadCharacter(url, h, fallbackSrc){
   const g = new THREE.Group();
   g.userData = { baseY:0, mixer:null, spin:0 };
+  let fallback = null;
+  if(fallbackSrc){
+    fallback = buildBillboard(fallbackSrc, h);
+    fallback.position.y = fallback.userData.baseY;
+    g.add(fallback);
+  }
   new GLTFLoader().load(url, (gltf)=>{
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
@@ -212,17 +218,18 @@ function loadCharacter(url, h){
     const b2 = new THREE.Box3().setFromObject(model);
     const c = new THREE.Vector3(); b2.getCenter(c);
     model.position.x -= c.x; model.position.z -= c.z; model.position.y -= b2.min.y;
+    if(fallback) g.remove(fallback);
     g.add(model);
     if(gltf.animations && gltf.animations.length){
       const mixer = new THREE.AnimationMixer(model);
       mixer.clipAction(gltf.animations[0]).play();
       g.userData.mixer = mixer;
     }
-  }, undefined, (err)=>{ console.log('glb load error', url, err); });
+  }, undefined, (err)=>{ console.warn('glb load error, keeping fallback', url, err); });
   return g;
 }
-function buildHuman(){ return loadCharacter('models/violinist.glb', 1.8); }
-function buildRobot(){ return loadCharacter('models/robot.glb', 1.7); }
+function buildHuman(){ return loadCharacter('models/violinist.glb', 1.8, 'characters/human.png'); }
+function buildRobot(){ return loadCharacter('models/robot.glb', 1.7, 'characters/robot.png'); }
 
 function buildScreen(){
   let tex, mat;
@@ -342,7 +349,7 @@ function buildStars(){
 function onResize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); }
 
 // ---------- audio ----------
-const STEMS = { vln1:'stems/vln1.mp3', vln2:'stems/vln2.mp3', cello:'stems/cello.mp3', piano:'stems/piano.mp3' };
+const STEMS = { mix:'stems/mix.mp3' };
 let actx, buffers={}, srcs={}, humanBus, machineBus, masterGain, analH, analM, dataH, dataM, playing=false, muted=false, audioReady=false;
 
 async function loadAudio(){
@@ -356,19 +363,24 @@ async function loadAudio(){
   humanBus.connect(masterGain); machineBus.connect(masterGain);
   const names = Object.keys(STEMS);
   await Promise.all(names.map(async n=>{
-    const r = await fetch(STEMS[n]); const ab = await r.arrayBuffer();
+    const r = await fetch(STEMS[n], { cache:'force-cache' });
+    if(!r.ok) throw new Error(`${STEMS[n]} ${r.status}`);
+    const ab = await r.arrayBuffer();
     buffers[n] = await actx.decodeAudioData(ab);
   }));
   audioReady = true;
 }
 function startPlayback(){
+  if(playing) return;
   const t = actx.currentTime + 0.06;
   for(const n of Object.keys(STEMS)){
+    if(!buffers[n]) continue;
     const s = actx.createBufferSource(); s.buffer = buffers[n]; s.loop = true;
-    s.connect(n.startsWith('vln') ? humanBus : machineBus);
+    s.connect(n==='mix' || n.startsWith('vln') ? humanBus : machineBus);
     s.start(t); srcs[n] = s;
   }
   playing = true;
+  playBtn.textContent='||';
   applyMix();
 }
 function applyMix(){
@@ -470,7 +482,7 @@ document.getElementById('enterBtn').addEventListener('click', async ()=>{
 });
 mixEl.addEventListener('input', ()=>{ mixVal = 1 - mixEl.value/100; applyMix(); }); // left=human, right=machine
 let paused=false;
-function setPaused(p){ paused=p; if(!actx)return; if(p){ actx.suspend(); playBtn.textContent='▶'; } else { actx.resume(); playBtn.textContent='❚❚'; } }
+function setPaused(p){ paused=p; if(!actx)return; if(p){ actx.suspend(); playBtn.textContent='>'; } else { actx.resume(); playBtn.textContent='||'; } }
 playBtn.addEventListener('click', ()=>{ if(actx) setPaused(!paused); });
 // auto-pause when tab hidden / window blurred, so it never keeps playing in the background
 document.addEventListener('visibilitychange', ()=>{
@@ -494,9 +506,9 @@ function stopFootage(i){
 }
 function playFootage(i){
   const p=footagePlanets[i], u=p.userData;
-  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); paused=false; playBtn.textContent='❚❚'; } return; }
+  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); paused=false; playBtn.textContent='||'; } return; }
   footagePlanets.forEach((pp,j)=>{ if(pp.userData.playing) stopFootage(j); });
-  if(actx && actx.state==='running'){ actx.suspend(); paused=true; playBtn.textContent='▶'; }
+  if(actx && actx.state==='running'){ actx.suspend(); paused=true; playBtn.textContent='>'; }
   // bring this planet to centre + enlarge, show its front screen, hide the other planet
   footagePlanets.forEach((pp,j)=>{
     if(j===i){ pp.visible=true; pp.userData.tpos.set(0,2.8,-5); pp.userData.tscale=2.0; }
