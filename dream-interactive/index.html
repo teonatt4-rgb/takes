@@ -51,6 +51,17 @@
   .foot-btns{display:flex;gap:12px;margin-top:18px;}
   .foot-btns button{padding:11px 22px;background:rgba(20,16,24,.6);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:30px;cursor:pointer;font-size:13px;backdrop-filter:blur(4px);}
   .foot-btns button:hover{border-color:#5fd0e6;}
+  @media(max-width:600px){
+    .veil{padding:20px;}
+    .veil h1{font-size:22px;}
+    .veil .desc{font-size:12px;line-height:1.75;}
+    #panel{padding:14px 12px 20px;gap:9px;}
+    .slider-row{width:100%;gap:8px;}
+    .slider-row .lab{font-size:10px;letter-spacing:0;}
+    #mix{min-width:36px;}
+    .btns{gap:8px;}
+    .btns button{width:43px;height:43px;}
+  }
 </style>
 </head>
 <body>
@@ -62,7 +73,7 @@
   <h1>梦的火星意识<br><span class="en">Dream of Martian Consciousness</span></h1>
   <p class="desc">一场人与机器的对话。两把小提琴都是我——那是人；合成的大提琴与钢琴，是机器。
     拖动下方的滑杆，决定这个梦里还剩下多少"人"。</p>
-  <button id="enterBtn">进入梦境 · ENTER</button>
+  <button id="enterBtn" disabled>正在准备画面…</button>
   <div class="loading" id="loading">载入声音中…</div>
 </div>
 
@@ -73,15 +84,23 @@
     <span class="lab m">MACHINE 机器</span>
   </div>
   <div class="btns">
-    <button id="playBtn" title="Play/Pause">||</button>
-    <button id="muteBtn" title="Mute">M</button>
-    <button id="foot1" title="Performance video 1" style="opacity:.6">V1</button>
-    <button id="foot2" title="Performance video 2" style="opacity:.6">V2</button>
+    <button id="playBtn" title="播放/暂停">❚❚</button>
+    <button id="muteBtn" title="静音">🔊</button>
+    <button id="foot1" title="声部一实拍" style="opacity:.6">🎻1</button>
+    <button id="foot2" title="声部二实拍" style="opacity:.6">🎻2</button>
   </div>
 </div>
 
 <div id="err"></div>
 
+<script>
+if (location.protocol === 'file:') {
+  const error = document.getElementById('err');
+  error.textContent = '交互需要通过本地网站地址打开。请启动网站预览后进入，直接双击 HTML 文件会阻止 3D 模型和分轨声音载入。';
+  error.style.display = 'block';
+  document.getElementById('enterBtn').disabled = true;
+}
+</script>
 
 <script type="importmap">
 { "imports": {
@@ -105,6 +124,7 @@ let dust, nebulaWarm, nebulaCold, planet;
 let planets=[], astronauts=[], footagePlanets=[];
 let mixVal = 0.5; // 0 = machine, 1 = human
 let lastT = 0;
+const compactScene = () => innerWidth < 600 || innerWidth / innerHeight < 0.75;
 // facing offset (radians) — tweak if a character faces sideways/backwards
 let HUMAN_FACE = -Math.PI/2, ROBOT_FACE = -Math.PI/2;
 const clock = new THREE.Clock();
@@ -121,7 +141,7 @@ function initScene(){
   scene.fog = new THREE.FogExp2(scene.background.getHex(), 0.045);
 
   camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 200);
-  camera.position.set(0, 1.8, 8);
+  camera.position.set(0, 1.8, compactScene() ? 10.5 : 8);
 
   hemi = new THREE.HemisphereLight(0xffffff, 0x202028, 0.5);
   scene.add(hemi);
@@ -177,8 +197,8 @@ function initScene(){
   const moonIndex = planets.findIndex(p=>p.userData.isMoon);
   // two "performance planets" — your real footage, played on demand via the buttons
   footagePlanets = [
-    makeFootagePlanet({ label:'Part 1', btn:'V1', tex:'2k_jupiter.jpg', src:'footage/vln1.mp4', r:1.6, x:-3.6, y:3.6, z:-9, spin:0.2 }),
-    makeFootagePlanet({ label:'Part 2', btn:'V2', tex:'2k_neptune.jpg', src:'footage/vln2.mp4', r:1.6, x:3.6,  y:3.6, z:-9, spin:0.2 })
+    makeFootagePlanet({ label:'声部一', btn:'🎻1', tex:'2k_jupiter.jpg', src:'footage/vln1.mp4', r:1.6, x:-3.6, y:3.6, z:-9, spin:0.2 }),
+    makeFootagePlanet({ label:'声部二', btn:'🎻2', tex:'2k_neptune.jpg', src:'footage/vln2.mp4', r:1.6, x:3.6,  y:3.6, z:-9, spin:0.2 })
   ];
   footagePlanets.forEach(p=>scene.add(p));
   // astronauts: all gathered on the MOON, big enough to see
@@ -190,6 +210,7 @@ function initScene(){
   }
 
   addEventListener('resize', onResize);
+  onResize();
 }
 
 function buildBillboard(src, h){
@@ -201,19 +222,10 @@ function buildBillboard(src, h){
   m.userData = { mat, baseY: h/2 };
   return m;
 }
-function loadCharacter(url, h, fallbackSrc){
+function loadCharacter(url, h){
   const g = new THREE.Group();
-  g.userData = { baseY:0, mixer:null, spin:0, loading:false, loaded:false, loadModel:null };
-  let fallback = null;
-  if(fallbackSrc){
-    fallback = buildBillboard(fallbackSrc, h);
-    fallback.position.y = fallback.userData.baseY;
-    g.add(fallback);
-  }
-  g.userData.loadModel = ()=>{
-    if(g.userData.loading || g.userData.loaded) return;
-    g.userData.loading = true;
-    new GLTFLoader().load(url, (gltf)=>{
+  g.userData = { baseY:0, mixer:null, spin:0 };
+  new GLTFLoader().load(url, (gltf)=>{
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = new THREE.Vector3(); box.getSize(size);
@@ -221,20 +233,17 @@ function loadCharacter(url, h, fallbackSrc){
     const b2 = new THREE.Box3().setFromObject(model);
     const c = new THREE.Vector3(); b2.getCenter(c);
     model.position.x -= c.x; model.position.z -= c.z; model.position.y -= b2.min.y;
-    if(fallback) g.remove(fallback);
     g.add(model);
     if(gltf.animations && gltf.animations.length){
       const mixer = new THREE.AnimationMixer(model);
       mixer.clipAction(gltf.animations[0]).play();
       g.userData.mixer = mixer;
     }
-    g.userData.loaded = true;
-  }, undefined, (err)=>{ g.userData.loading = false; console.warn('glb load error, keeping fallback', url, err); });
-  };
+  }, undefined, (err)=>{ console.log('glb load error', url, err); });
   return g;
 }
-function buildHuman(){ return loadCharacter('models/violinist.glb', 1.8, 'characters/human.png'); }
-function buildRobot(){ return loadCharacter('models/robot.glb', 1.7, 'characters/robot.png'); }
+function buildHuman(){ return loadCharacter('models/violinist.glb', 1.8); }
+function buildRobot(){ return loadCharacter('models/robot.glb', 1.7); }
 
 function buildScreen(){
   let tex, mat;
@@ -319,12 +328,14 @@ function makeFootagePlanet(o){
   lx.shadowColor='rgba(0,0,0,0.75)'; lx.shadowBlur=12; lx.fillText(o.label,128,40);
   const label=new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(lc), transparent:true, depthWrite:false }));
   label.scale.set(o.r*2.4, o.r*0.68, 1); label.position.set(0, o.r+0.55, 0); g.add(label);
-  // flat video screen in FRONT of the sphere, created only when clicked
+  // flat video screen in FRONT of the sphere (hidden until played)
+  const v=document.createElement('video'); v.src=o.src; v.loop=true; v.playsInline=true; v.crossOrigin='anonymous'; v.preload='metadata';
+  const vidTex=new THREE.VideoTexture(v); vidTex.colorSpace=THREE.SRGBColorSpace;
   const w=o.r*1.95;
-  const screen=new THREE.Mesh(new THREE.PlaneGeometry(w, w*0.5625), new THREE.MeshBasicMaterial({ color:0x050505 }));
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(w, w*0.5625), new THREE.MeshBasicMaterial({ map:vidTex }));
   screen.position.z=o.r+0.06; screen.visible=false; g.add(screen);
   g.position.set(o.x,o.y,o.z);
-  g.userData={ sphere, screen, label, video:null, vidTex:null, src:o.src, playing:false, home:new THREE.Vector3(o.x,o.y,o.z), tpos:new THREE.Vector3(o.x,o.y,o.z), tscale:1, spin:o.spin||0.15 };
+  g.userData={ sphere, screen, label, video:v, vidTex, playing:false, home:new THREE.Vector3(o.x,o.y,o.z), tpos:new THREE.Vector3(o.x,o.y,o.z), tscale:1, spin:o.spin||0.15 };
   return g;
 }
 function makeAstronaut(){
@@ -349,19 +360,24 @@ function buildStars(){
   return new THREE.Points(geo, mat);
 }
 
-function onResize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); }
+function onResize(){
+  camera.aspect=innerWidth/innerHeight;
+  camera.position.z=compactScene()?10.5:8;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+  footagePlanets.forEach((p,i)=>{
+    const x=compactScene()?(i===0?-1.6:1.6):(i===0?-3.6:3.6);
+    p.userData.home.x=x;
+    if(!p.userData.playing)p.userData.tpos.x=x;
+  });
+}
 
 // ---------- audio ----------
-const MIX_SRC = 'stems/mix.mp3';
-let actx, audioEl, mediaSrc, humanBus, machineBus, masterGain, analH, analM, dataH, dataM, playing=false, muted=false, audioReady=false;
+const STEMS = { vln1:'stems/vln1.mp3', vln2:'stems/vln2.mp3', cello:'stems/cello.mp3', piano:'stems/piano.mp3' };
+let actx, buffers={}, srcs={}, humanBus, machineBus, masterGain, analH, analM, dataH, dataM, playing=false, muted=false, audioReady=false;
 
-function loadAudio(){
-  if(audioReady) return;
+async function loadAudio(){
   actx = new (window.AudioContext||window.webkitAudioContext)();
-  audioEl = new Audio(MIX_SRC);
-  audioEl.loop = true;
-  audioEl.preload = 'auto';
-  audioEl.crossOrigin = 'anonymous';
   masterGain = actx.createGain(); masterGain.connect(actx.destination);
   humanBus = actx.createGain(); machineBus = actx.createGain();
   analH = actx.createAnalyser(); analM = actx.createAnalyser();
@@ -369,17 +385,21 @@ function loadAudio(){
   dataH = new Uint8Array(analH.frequencyBinCount); dataM = new Uint8Array(analM.frequencyBinCount);
   humanBus.connect(analH); machineBus.connect(analM);
   humanBus.connect(masterGain); machineBus.connect(masterGain);
-  mediaSrc = actx.createMediaElementSource(audioEl);
-  mediaSrc.connect(humanBus);
-  mediaSrc.connect(machineBus);
+  const names = Object.keys(STEMS);
+  await Promise.all(names.map(async n=>{
+    const r = await fetch(STEMS[n]); const ab = await r.arrayBuffer();
+    buffers[n] = await actx.decodeAudioData(ab);
+  }));
   audioReady = true;
 }
-async function startPlayback(){
-  if(playing) return;
-  if(actx && actx.state==='suspended') await actx.resume();
-  await audioEl.play();
+function startPlayback(){
+  const t = actx.currentTime + 0.06;
+  for(const n of Object.keys(STEMS)){
+    const s = actx.createBufferSource(); s.buffer = buffers[n]; s.loop = true;
+    s.connect(n.startsWith('vln') ? humanBus : machineBus);
+    s.start(t); srcs[n] = s;
+  }
   playing = true;
-  playBtn.textContent='||';
   applyMix();
 }
 function applyMix(){
@@ -406,6 +426,7 @@ function animate(){
     if(human.userData.mixer) human.userData.mixer.update(dt);
     human.rotation.y = HUMAN_FACE;
     human.rotation.z = Math.sin(t*2)*0.04*hb;
+    human.position.x = compactScene() ? -1.15 : -2.0;
     human.position.y = Math.abs(Math.sin(t*2.6))*0.07*hb;
     human.scale.setScalar(0.8 + m*0.45);
   }
@@ -415,7 +436,7 @@ function animate(){
     if(robot.userData.mixer) robot.userData.mixer.update(dt);
     robot.rotation.y = ROBOT_FACE + Math.sin(t*2)*0.12*mb;       // look left-right groove
     robot.rotation.z = Math.sin(t*4)*0.05*mb;                    // tilt step
-    robot.position.x = 2.0 + Math.sin(t*2)*0.07*mb;              // little side shuffle
+    robot.position.x = (compactScene()?1.15:2.0) + Math.sin(t*2)*0.07*mb; // little side shuffle
     robot.position.y = Math.abs(Math.sin(t*3+1))*0.1*mb;         // hops
     robot.scale.setScalar(0.8 + (1-m)*0.45);
   }
@@ -444,7 +465,7 @@ function animate(){
     a.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), n);
   }
   // camera gentle drift
-  camera.position.x = Math.sin(t*0.12)*1.6;
+  camera.position.x = Math.sin(t*0.12)*(compactScene()?0.25:1.6);
   camera.position.y = 1.8 + Math.sin(t*0.18)*0.2;
   camera.lookAt(0, 1.1, 0);
 
@@ -460,8 +481,15 @@ const veil = document.getElementById('veil'), panel = document.getElementById('p
 const mixEl = document.getElementById('mix'), playBtn = document.getElementById('playBtn'), muteBtn = document.getElementById('muteBtn');
 const loadingEl = document.getElementById('loading'), errEl = document.getElementById('err');
 
-initScene();
-animate();
+try{
+  initScene();
+  animate();
+  document.getElementById('enterBtn').disabled=false;
+  document.getElementById('enterBtn').textContent='进入梦境 · ENTER';
+}catch(e){
+  errEl.style.display='block';
+  errEl.textContent='3D 场景未能启动。请更新浏览器或换用支持 WebGL 的浏览器：'+e.message;
+}
 
 document.getElementById('enterBtn').addEventListener('click', async ()=>{
   // enter the scene immediately so you're never stuck on the veil
@@ -469,20 +497,19 @@ document.getElementById('enterBtn').addEventListener('click', async ()=>{
   panel.classList.add('on');
   document.getElementById('stateLabel').classList.add('on');
   loadingEl.classList.add('on');
-  if(human?.userData.loadModel) human.userData.loadModel();
-  if(robot?.userData.loadModel) robot.userData.loadModel();
   try{
-    if(!audioReady) loadAudio();
-    startPlayback().then(()=>loadingEl.classList.remove('on')).catch(()=>{});
-    setTimeout(()=>loadingEl.classList.remove('on'), 1200);
+    if(!audioReady) await loadAudio();
+    if(actx && actx.state==='suspended') await actx.resume();
+    startPlayback();
+    loadingEl.classList.remove('on');
   }catch(e){
     errEl.style.display='block';
-    errEl.textContent = '画面已进入，但声音载入失败（请用 http://localhost:4321/dream-interactive/ 打开，别直接双击文件）：'+e.message;
+    errEl.textContent = '画面已进入，但声音载入失败。请确认通过本地网站地址打开、stems 文件齐全，然后刷新重试：'+e.message;
   }
 });
 mixEl.addEventListener('input', ()=>{ mixVal = 1 - mixEl.value/100; applyMix(); }); // left=human, right=machine
 let paused=false;
-function setPaused(p){ paused=p; if(!actx)return; if(p){ actx.suspend(); playBtn.textContent='>'; } else { actx.resume(); playBtn.textContent='||'; } }
+function setPaused(p){ paused=p; if(!actx)return; if(p){ actx.suspend(); playBtn.textContent='▶'; } else { actx.resume(); playBtn.textContent='❚❚'; } }
 playBtn.addEventListener('click', ()=>{ if(actx) setPaused(!paused); });
 // auto-pause when tab hidden / window blurred, so it never keeps playing in the background
 document.addEventListener('visibilitychange', ()=>{
@@ -498,36 +525,24 @@ muteBtn.addEventListener('click', ()=>{
 });
 // performance planets: press a button → that part's video plays ON its planet, main music pauses
 function resetFootageLayout(){
-  footagePlanets.forEach(p=>{ p.visible=true; p.userData.tpos.copy(p.userData.home); p.userData.tscale=1; p.userData.screen.visible=false; });
+  footagePlanets.forEach(p=>{ p.visible=true; p.userData.tpos.copy(p.userData.home); p.userData.tscale=1; p.userData.screen.visible=false; p.userData.label.visible=true; });
 }
 function stopFootage(i){
-  const u=footagePlanets[i].userData; if(u.video) u.video.pause(); u.screen.visible=false; u.playing=false;
+  const u=footagePlanets[i].userData; u.video.pause(); u.screen.visible=false; u.label.visible=true; u.playing=false;
   document.getElementById('foot'+(i+1)).style.opacity='0.6';
 }
 function playFootage(i){
   const p=footagePlanets[i], u=p.userData;
-  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); if(audioEl) audioEl.play().catch(()=>{}); paused=false; playBtn.textContent='||'; } return; }
+  if(u.playing){ stopFootage(i); resetFootageLayout(); if(actx){ actx.resume(); paused=false; playBtn.textContent='❚❚'; } return; }
   footagePlanets.forEach((pp,j)=>{ if(pp.userData.playing) stopFootage(j); });
-  if(actx && actx.state==='running'){ actx.suspend(); if(audioEl) audioEl.pause(); paused=true; playBtn.textContent='>'; }
+  if(actx && actx.state==='running'){ actx.suspend(); paused=true; playBtn.textContent='▶'; }
   // bring this planet to centre + enlarge, show its front screen, hide the other planet
   footagePlanets.forEach((pp,j)=>{
     if(j===i){ pp.visible=true; pp.userData.tpos.set(0,2.8,-5); pp.userData.tscale=2.0; }
     else { pp.visible=false; }
   });
-  if(!u.video){
-    u.video=document.createElement('video');
-    u.video.src=u.src;
-    u.video.loop=true;
-    u.video.playsInline=true;
-    u.video.crossOrigin='anonymous';
-    u.video.preload='metadata';
-    u.vidTex=new THREE.VideoTexture(u.video);
-    u.vidTex.colorSpace=THREE.SRGBColorSpace;
-    u.screen.material.map=u.vidTex;
-    u.screen.material.needsUpdate=true;
-  }
   u.video.muted=false; u.video.currentTime=0; u.video.play().catch(()=>{});
-  u.screen.visible=true; u.playing=true;
+  u.screen.visible=true; u.label.visible=false; u.playing=true;
   document.getElementById('foot'+(i+1)).style.opacity='1';
 }
 document.getElementById('foot1').addEventListener('click', ()=>playFootage(0));
