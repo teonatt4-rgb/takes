@@ -71,10 +71,11 @@
 
 <div class="veil" id="veil">
   <h1>梦的火星意识<br><span class="en">Dream of Martian Consciousness</span></h1>
+  <p class="desc">Both violins are me. The synthesised cello and piano stand for the machine. Move the slider to decide how much of each you hear, and ask what still belongs to the human when creation relies more and more on machines.</p>
   <p class="desc">一场人与机器的对话。两把小提琴都是我——那是人；合成的大提琴与钢琴，是机器。
     拖动下方的滑杆，决定这个梦里还剩下多少"人"。</p>
-  <button id="enterBtn" disabled>正在准备画面…</button>
-  <div class="loading" id="loading">载入声音中…</div>
+  <button id="enterBtn" disabled>Loading… / 加载中…</button>
+  <div class="loading" id="loading">Loading… / 加载中…</div>
 </div>
 
 <div id="panel">
@@ -84,10 +85,10 @@
     <span class="lab m">MACHINE 机器</span>
   </div>
   <div class="btns">
-    <button id="playBtn" title="播放/暂停">❚❚</button>
-    <button id="muteBtn" title="静音">🔊</button>
-    <button id="foot1" title="声部一实拍" style="opacity:.6">🎻1</button>
-    <button id="foot2" title="声部二实拍" style="opacity:.6">🎻2</button>
+    <button id="playBtn" title="Play / Pause · 播放/暂停">❚❚</button>
+    <button id="muteBtn" title="Mute · 静音">🔊</button>
+    <button id="foot1" title="Violin 1 footage · 声部一实拍" style="opacity:.6">🎻1</button>
+    <button id="foot2" title="Violin 2 footage · 声部二实拍" style="opacity:.6">🎻2</button>
   </div>
 </div>
 
@@ -96,7 +97,7 @@
 <script>
 if (location.protocol === 'file:') {
   const error = document.getElementById('err');
-  error.textContent = '交互需要通过本地网站地址打开。请启动网站预览后进入，直接双击 HTML 文件会阻止 3D 模型和分轨声音载入。';
+  error.textContent = 'Could not load. Please refresh the page. / 加载失败，请刷新页面。';
   error.style.display = 'block';
   document.getElementById('enterBtn').disabled = true;
 }
@@ -485,10 +486,10 @@ try{
   initScene();
   animate();
   document.getElementById('enterBtn').disabled=false;
-  document.getElementById('enterBtn').textContent='进入梦境 · ENTER';
+  document.getElementById('enterBtn').textContent='ENTER · 进入梦境';
 }catch(e){
   errEl.style.display='block';
-  errEl.textContent='3D 场景未能启动。请更新浏览器或换用支持 WebGL 的浏览器：'+e.message;
+  errEl.textContent='The 3D scene could not start. Please update your browser or use one that supports WebGL. / 3D 场景未能启动。请更新浏览器或换用支持 WebGL 的浏览器。';
 }
 
 document.getElementById('enterBtn').addEventListener('click', async ()=>{
@@ -504,7 +505,7 @@ document.getElementById('enterBtn').addEventListener('click', async ()=>{
     loadingEl.classList.remove('on');
   }catch(e){
     errEl.style.display='block';
-    errEl.textContent = '画面已进入，但声音载入失败。请确认通过本地网站地址打开、stems 文件齐全，然后刷新重试：'+e.message;
+    errEl.textContent = 'Could not load. Please refresh the page. / 加载失败，请刷新页面。'; console.log('audio load error', e);
   }
 });
 mixEl.addEventListener('input', ()=>{ mixVal = 1 - mixEl.value/100; applyMix(); }); // left=human, right=machine
